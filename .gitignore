@@ -65,3 +65,5 @@ share/
 
 #pip
 pip-selfcheck.json
+#misc
+misc/
