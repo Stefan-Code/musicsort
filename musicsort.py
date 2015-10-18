@@ -9,6 +9,7 @@ import os
 import glob
 import click
 import string
+import shutil
 from click import echo
 
 class MP3:
@@ -57,6 +58,16 @@ def cli(directory):
     for mp3_path in mp3s:
         try:
             mp3 = MP3(mp3_path)
+            oldpath = mp3_path
+            root = os.path.dirname(oldpath)
+            filename = os.path.basename(oldpath)
+            newpath = os.path.join(root, "{}/{}/".format(make_filesystem_safe(mp3.artist),
+                                                         make_filesystem_safe(mp3.album)))
+            newfilepath = os.path.join(newpath, filename)
+            echo("{} -> {}".format(oldpath, newpath))
+            # actual moving:
+            mkdir_recursive(newpath)  # make sure the dir we're moving to exists
+            shutil.move(oldpath, newfilepath)
             # echo("{} {} {}".format(mp3.artist, mp3.album, mp3.title))
         except Exception as e:  # pylint: disable=W0703
             echo("Having trouble with {} : {}".format(mp3_path, e))
@@ -79,6 +90,16 @@ def make_filesystem_safe(filename):
     valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
     return ''.join(c for c in filename if c in valid_chars)
 
+def mkdir_recursive(path):
+    """
+    Checks if path is an existing directory.
+    If not, recursively creates all directories for path to exist.
+    """
+    sub_path = os.path.dirname(path)
+    if not os.path.exists(sub_path):
+        mkdir_recursive(sub_path)
+    if not os.path.exists(path):
+        os.mkdir(path)
+
 if __name__ == "__main__":
     cli(None)
-    #print(get_mp3_paths("."))
