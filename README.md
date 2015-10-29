@@ -8,7 +8,7 @@ Requirements
 
 Compability
 ----------
-Anyways, Musicsort works with Python3 only (If you add `__future__` imports it may work with python2, too) and depends on `mutagen` for ID3 tag handling.'
+Anyways, Musicsort works with Python3 only (If you add `__future__` imports it may work with python2, too) and depends on `mutagen` for ID3 tag handling.
 
 What it actually does
 --------------
