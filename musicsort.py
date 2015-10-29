@@ -1,10 +1,11 @@
+#!/usr/bin/python3
 """
 This module allows to quickly sort mp3 files lying around into subfolders based on ID3 tags.
 That means the files are sorted into folders
 based on the Artist and Album. (To be customizable in the future)
 If your mp3s don't have ID3 tags on them, fix it using e.g. picard or MP3Tag.
 """
-from mutagen.mp3 import EasyMP3 as EasyMP3
+from mutagen.mp3 import EasyMP3
 import os
 import glob
 import click
@@ -21,7 +22,7 @@ class MP3:
         if os.path.isfile(path):
             self._mutagen_mp3 = EasyMP3(path)
         else:
-            raise RuntimeError("File {} not found".format(path))
+            raise FileNotFoundError("File {} not found".format(path))
     @property
     def artist(self):
         """
@@ -75,11 +76,14 @@ def cli(directory):
 
 def get_mp3_paths(path):
     """
-    Returns the absolute paths of all *.mp3 files in a given directory (path)
+    Returns the relative paths of all *.mp3 files in a given directory (path)
     """
+    if not os.path.isdir(path):
+        raise FileNotFoundError("The Directory you specified does not exist")
     paths = []
+
     for filename in glob.iglob(os.path.join(path, '*.mp3')):
-        paths.append(os.path.join(path, filename))
+        paths.append(os.path.join(filename))
     return paths
 
 def make_filesystem_safe(filename):
