@@ -49,13 +49,16 @@ class MP3:
 
 @click.command()
 @click.argument('directory', required=True)
-def cli(directory):
+@click.option('--dry-run', is_flag=True)
+def cli(directory, dry_run):
     """
     Main function called by click
     """
     echo("Looking for mp3s in" + directory)
     mp3s = get_mp3_paths(directory)
     echo("found {} mp3s".format(len(mp3s)))
+    if dry_run:
+        echo("dry run - not moving any files")
     for mp3_path in mp3s:
         try:
             mp3 = MP3(mp3_path)
@@ -67,8 +70,9 @@ def cli(directory):
             newfilepath = os.path.join(newpath, filename)
             echo("{} -> {}".format(oldpath, newpath))
             # actual moving:
-            mkdir_recursive(newpath)  # make sure the dir we're moving to exists
-            shutil.move(oldpath, newfilepath)
+            if not dry_run:
+                mkdir_recursive(newpath)  # make sure the dir we're moving to exists
+                shutil.move(oldpath, newfilepath)
             # echo("{} {} {}".format(mp3.artist, mp3.album, mp3.title))
         except Exception as e:  # pylint: disable=W0703
             echo("Having trouble with {} : {}".format(mp3_path, e))
@@ -106,4 +110,4 @@ def mkdir_recursive(path):
         os.mkdir(path)
 
 if __name__ == "__main__":
-    cli(None)
+    cli()
